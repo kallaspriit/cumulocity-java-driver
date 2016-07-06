@@ -10,13 +10,18 @@ import com.cumulocity.model.operation.OperationStatus;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.cumulocity.rest.representation.operation.OperationRepresentation;
 import com.cumulocity.sdk.client.Platform;
+import com.stagnationlab.c8y.driver.sensor.LightSensorDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DriverManager implements Driver, OperationExecutor, HardwareProvider {
     private static Logger log = LoggerFactory.getLogger(DriverManager.class);
 
+    private List<Driver> drivers = new ArrayList<>();
     private Hardware hardware;
     private GId gid;
 
@@ -32,11 +37,16 @@ public class DriverManager implements Driver, OperationExecutor, HardwareProvide
         log.info("initializing");
 
         hardware = PlatformManager.resolveHardware();
+
+        setupSensors();
+        initializeDrivers();
     }
 
     @Override
     public void initialize(Platform platform) throws Exception {
         log.info("initializing platform");
+
+        initializeDrivers(platform);
     }
 
     @Override
@@ -53,11 +63,19 @@ public class DriverManager implements Driver, OperationExecutor, HardwareProvide
         log.info("discovering children");
 
         this.gid = managedObjectRepresentation.getId();
+
+        for (Driver driver : drivers) {
+            driver.discoverChildren(managedObjectRepresentation);
+        }
     }
 
     @Override
     public void start() {
         log.info("starting driver");
+
+        for (Driver driver : drivers) {
+            driver.start();
+        }
     }
 
     @Override
@@ -89,8 +107,46 @@ public class DriverManager implements Driver, OperationExecutor, HardwareProvide
     public OperationExecutor[] getSupportedOperations() {
         log.info("supported operations requested");
 
-        return new OperationExecutor[]{this};
+        List<OperationExecutor> operationExecutorsList = new ArrayList<>();
+
+        operationExecutorsList.add(this);
+
+        for (Driver driver : drivers) {
+            for (OperationExecutor driverOperationExecutor : driver.getSupportedOperations()) {
+                operationExecutorsList.add(driverOperationExecutor);
+            }
+        }
+
+        return operationExecutorsList.toArray(new OperationExecutor[operationExecutorsList.size()]);
     }
 
+    private void setupSensors() {
+        log.info("setting up sensors");
 
+        setupLightSensor();
+    }
+
+    private void setupLightSensor() {
+        log.info("setting up light sensor");
+
+        LightSensorDriver lightSensorDriver = new LightSensorDriver("1");
+
+        drivers.add(lightSensorDriver);
+    }
+
+    private void initializeDrivers() throws Exception {
+        log.info("initializing drivers");
+
+        for (Driver driver : drivers) {
+            driver.initialize();
+        }
+    }
+
+    private void initializeDrivers(Platform platform) throws Exception {
+        log.info("initializing drivers with platform");
+
+        for (Driver driver : drivers) {
+            driver.initialize(platform);
+        }
+    }
 }
