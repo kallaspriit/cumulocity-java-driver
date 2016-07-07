@@ -4,7 +4,7 @@ import c8y.Hardware;
 import com.cumulocity.model.ID;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 
-public class ChildDeviceFactory {
+public class DeviceManager {
 
     public static ManagedObjectRepresentation createChild(
             String id,

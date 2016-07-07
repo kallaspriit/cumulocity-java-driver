@@ -27,7 +27,7 @@ dependencies {
     compile group: 'com.nsn.cumulocity.model', name: 'device-capability-model', version: '7.28.0'
 
     // pi4j raspberry pi gpio
-    compile group: 'com.pi4j', name: 'pi4j-core', version: '0.0.5'
+    compile group: 'com.pi4j', name: 'pi4j-core', version: '1.0'
 
     // logging
     //compile group: 'org.slf4j', name: 'slf4j-simple', version: 'latest.release'

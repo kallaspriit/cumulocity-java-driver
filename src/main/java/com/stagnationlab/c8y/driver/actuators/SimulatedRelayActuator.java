@@ -11,7 +11,7 @@ import com.cumulocity.model.operation.OperationStatus;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.cumulocity.rest.representation.operation.OperationRepresentation;
 import com.cumulocity.sdk.client.Platform;
-import com.stagnationlab.c8y.driver.ChildDeviceFactory;
+import com.stagnationlab.c8y.driver.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +19,10 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
 
     private static Logger log = LoggerFactory.getLogger(SimulatedRelayActuator.class);
 
-    private static final String type = "Relay";
     private ManagedObjectRepresentation relayManagedObject;
     private Relay relay = new Relay();
-    private String id;
     private Platform platform;
+    private String id;
 
     public SimulatedRelayActuator(String id) {
         this.id = id;
@@ -47,15 +46,11 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
 
         relay.setRelayState(Relay.RelayState.OPEN);
 
-        relayManagedObject = ChildDeviceFactory.createChild(
+        relayManagedObject = DeviceManager.createChild(
                 id,
-                type,
+                "Relay",
                 new Relay(),
-                new Hardware(
-                        "Simulated Relay Actuator",
-                        "356734556743235",
-                        "1.0.0"
-                )
+                getHardware()
         );
 
         for (OperationExecutor operation : getSupportedOperations()) {
@@ -65,9 +60,15 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
         }
 
         DeviceManagedObject deviceManagedObject = new DeviceManagedObject(platform);
-        ID externalId = ChildDeviceFactory.buildExternalId(parent, relayManagedObject, id);
+        ID externalId = DeviceManager.buildExternalId(parent, relayManagedObject, id);
 
         deviceManagedObject.createOrUpdate(relayManagedObject, externalId, parent.getId());
+
+        if (relayManagedObject.getId() == null) {
+            throw new RuntimeException("created managed object id failed");
+        }
+
+        log.info("created managed object: " + relayManagedObject.getId());
     }
 
     @Override
@@ -87,11 +88,13 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
 
     @Override
     public void start() {
-        setLedOn(false, true);
+        setRelayOn(false, true);
     }
 
     @Override
     public void execute(OperationRepresentation operation, boolean cleanup) throws Exception {
+        log.info("checking execution " + (relayManagedObject == null ? "null" : "not null"));
+
         if (!relayManagedObject.getId().equals(operation.getDeviceId())) {
             log.info((cleanup ? "cleanup" : "normal") + " execution for device '" + operation.getDeviceId() + "' requested but does not match this device (" + relayManagedObject.getId() + "), ignoring it");
 
@@ -108,23 +111,35 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
             operation.setStatus(OperationStatus.SUCCESSFUL.toString());
         }
 
-        boolean isLedOn = relay.getRelayState().equals(Relay.RelayState.CLOSED);
+        boolean isRelayOn = relay.getRelayState().equals(Relay.RelayState.CLOSED);
 
-        setLedOn(!isLedOn);
+        setRelayOn(!isRelayOn);
     }
 
-    private void setLedOn(boolean isLedOn, boolean isForced) {
-        boolean isRelayActivated = relay.getRelayState() == Relay.RelayState.CLOSED;
+    protected Hardware getHardware() {
+        return new Hardware(
+                "Simulated Relay Actuator",
+                "356734556743235",
+                "1.0.0"
+        );
+    }
 
-        if (!isForced && isLedOn == isRelayActivated) {
-            log.info("led is already " + (isLedOn ? "on" : "off") + ", ignoring request");
+    protected void applyRelayState(boolean isRelayOn) {
+        log.info("turning simulated relay " + (isRelayOn ? "on" : "off"));
+    }
+
+    private void setRelayOn(boolean isRelayOn, boolean isForced) {
+        boolean isRelayCurrentlyOn = relay.getRelayState() == Relay.RelayState.CLOSED;
+
+        if (!isForced && isRelayOn == isRelayCurrentlyOn) {
+            log.info("relay is already " + (isRelayOn ? "on" : "off") + ", ignoring request");
 
             return;
         }
 
-        log.info("turning led " + (isLedOn ? "on" : "off"));
+        applyRelayState(isRelayOn);
 
-        relay.setRelayState(isLedOn ? Relay.RelayState.CLOSED : Relay.RelayState.OPEN);
+        relay.setRelayState(isRelayOn ? Relay.RelayState.CLOSED : Relay.RelayState.OPEN);
 
         ManagedObjectRepresentation updateRelayManagedObject = new ManagedObjectRepresentation();
         updateRelayManagedObject.setId(relayManagedObject.getId());
@@ -133,7 +148,7 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
         platform.getInventoryApi().update(updateRelayManagedObject);
     }
 
-    private void setLedOn(boolean isLedOn) {
-        setLedOn(isLedOn, false);
+    private void setRelayOn(boolean isRelayOn) {
+        setRelayOn(isRelayOn, false);
     }
 }

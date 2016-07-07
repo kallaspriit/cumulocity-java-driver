@@ -7,7 +7,7 @@ import c8y.lx.driver.DeviceManagedObject;
 import c8y.lx.driver.MeasurementPollingDriver;
 import com.cumulocity.model.ID;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
-import com.stagnationlab.c8y.driver.ChildDeviceFactory;
+import com.stagnationlab.c8y.driver.DeviceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class SimulatedLightSensor extends MeasurementPollingDriver {
     public void discoverChildren(ManagedObjectRepresentation parent) {
         log.info("creating child");
 
-        ManagedObjectRepresentation child = ChildDeviceFactory.createChild(
+        ManagedObjectRepresentation child = DeviceManager.createChild(
                 id,
                 type,
                 new LightSensor(),
@@ -54,7 +54,7 @@ public class SimulatedLightSensor extends MeasurementPollingDriver {
         setSource(child);
 
         DeviceManagedObject deviceManagedObject = new DeviceManagedObject(getPlatform());
-        ID externalId = ChildDeviceFactory.buildExternalId(parent, child, id);
+        ID externalId = DeviceManager.buildExternalId(parent, child, id);
 
         deviceManagedObject.createOrUpdate(child, externalId, parent.getId());
     }

@@ -7,17 +7,20 @@ import com.cumulocity.model.operation.OperationStatus;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.cumulocity.rest.representation.operation.OperationRepresentation;
 import com.cumulocity.sdk.client.Platform;
+import com.pi4j.io.gpio.RaspiPin;
+import com.stagnationlab.c8y.driver.actuators.RaspberryRelayActuator;
 import com.stagnationlab.c8y.driver.actuators.SimulatedRelayActuator;
 import com.stagnationlab.c8y.driver.sensors.SimulatedLightSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
-public class DriverManager implements Driver, OperationExecutor {
-    private static Logger log = LoggerFactory.getLogger(DriverManager.class);
+public class GatewayDriver implements Driver, OperationExecutor {
+    private static Logger log = LoggerFactory.getLogger(GatewayDriver.class);
 
     private List<Driver> drivers = new ArrayList<>();
     private GId gid;
@@ -29,14 +32,23 @@ public class DriverManager implements Driver, OperationExecutor {
 
         setupSensors();
         setupActuators();
-        initializeDrivers();
+
+        try {
+            initializeDrivers();
+        } catch (Exception e) {
+            log.warn("initializing drivers failed");
+        }
     }
 
     @Override
     public void initialize(Platform platform) throws Exception {
         log.info("initializing platform");
 
-        initializeDrivers(platform);
+        try {
+            initializeDrivers(platform);
+        } catch (Exception e) {
+            log.warn("initializing drivers platform failed");
+        }
     }
 
     @Override
@@ -124,6 +136,7 @@ public class DriverManager implements Driver, OperationExecutor {
         log.info("setting up actuators");
 
         setupSimulatedRelayActuator();
+        setupRaspberryRelayActuator();
     }
 
     private void setupSimulatedRelayActuator() {
@@ -134,19 +147,47 @@ public class DriverManager implements Driver, OperationExecutor {
         drivers.add(simulatedRelayActuator);
     }
 
-    private void initializeDrivers() throws Exception {
+    private void setupRaspberryRelayActuator() {
+        log.info("setting up raspberry relay actuator");
+
+        RaspberryRelayActuator raspberryRelayActuator = new RaspberryRelayActuator("2", RaspiPin.GPIO_09);
+
+        drivers.add(raspberryRelayActuator);
+    }
+
+    private void initializeDrivers() {
         log.info("initializing drivers");
 
-        for (Driver driver : drivers) {
-            driver.initialize();
+        Iterator<Driver> iterator = drivers.iterator();
+
+        while (iterator.hasNext()) {
+            Driver driver = iterator.next();
+
+            try {
+                driver.initialize();
+            } catch (Exception e) {
+                log.warn("initializing driver failed (" + e.getMessage() + "), skipping the driver " + driver.getClass().getName());
+
+                iterator.remove();
+            }
         }
     }
 
-    private void initializeDrivers(Platform platform) throws Exception {
+    private void initializeDrivers(Platform platform) {
         log.info("initializing drivers with platform");
 
-        for (Driver driver : drivers) {
-            driver.initialize(platform);
+        Iterator<Driver> iterator = drivers.iterator();
+
+        while (iterator.hasNext()) {
+            Driver driver = iterator.next();
+
+            try {
+                driver.initialize(platform);
+            } catch (Exception e) {
+                log.warn("initializing driver platform failed (" + e.getMessage() + "), skipping the driver " + driver.getClass().getName());
+
+                iterator.remove();
+            }
         }
     }
 }
