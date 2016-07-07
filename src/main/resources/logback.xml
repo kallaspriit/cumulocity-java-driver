@@ -26,9 +26,11 @@
 
     <!-- make the application log at lower level -->
     <logger name="com.stagnationlab" level="TRACE"/>
+    <logger name="c8y" level="TRACE"/>
+    <logger name="org" level="TRACE"/>
 
     <!-- external components log above WARN level -->
-    <root level="WARN">
+    <root level="TRACE">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

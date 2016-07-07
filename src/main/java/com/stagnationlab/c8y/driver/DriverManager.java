@@ -1,16 +1,14 @@
 package com.stagnationlab.c8y.driver;
 
-import c8y.Hardware;
 import c8y.lx.driver.Driver;
-import c8y.lx.driver.HardwareProvider;
 import c8y.lx.driver.OperationExecutor;
-import c8y.lx.driver.OpsUtil;
 import com.cumulocity.model.idtype.GId;
 import com.cumulocity.model.operation.OperationStatus;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.cumulocity.rest.representation.operation.OperationRepresentation;
 import com.cumulocity.sdk.client.Platform;
-import com.stagnationlab.c8y.driver.sensor.LightSensorDriver;
+import com.stagnationlab.c8y.driver.actuators.SimulatedRelayActuator;
+import com.stagnationlab.c8y.driver.sensors.SimulatedLightSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,27 +16,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class DriverManager implements Driver, OperationExecutor, HardwareProvider {
+public class DriverManager implements Driver, OperationExecutor {
     private static Logger log = LoggerFactory.getLogger(DriverManager.class);
 
     private List<Driver> drivers = new ArrayList<>();
-    private Hardware hardware;
     private GId gid;
 
-    @Override
-    public Hardware getHardware() {
-        log.info("hardware requested");
-
-        return hardware;
-    }
 
     @Override
     public void initialize() throws Exception {
         log.info("initializing");
 
-        hardware = PlatformManager.resolveHardware();
-
         setupSensors();
+        setupActuators();
         initializeDrivers();
     }
 
@@ -52,10 +42,6 @@ public class DriverManager implements Driver, OperationExecutor, HardwareProvide
     @Override
     public void initializeInventory(ManagedObjectRepresentation managedObjectRepresentation) {
         log.info("initializing inventory");
-
-        managedObjectRepresentation.set(hardware);
-
-        OpsUtil.addSupportedOperation(managedObjectRepresentation, supportedOperationType());
     }
 
     @Override
@@ -123,15 +109,29 @@ public class DriverManager implements Driver, OperationExecutor, HardwareProvide
     private void setupSensors() {
         log.info("setting up sensors");
 
-        setupLightSensor();
+        setupSimulatedLightSensor();
     }
 
-    private void setupLightSensor() {
+    private void setupSimulatedLightSensor() {
         log.info("setting up light sensor");
 
-        LightSensorDriver lightSensorDriver = new LightSensorDriver("1");
+        SimulatedLightSensor simulatedLightSensor = new SimulatedLightSensor("1");
 
-        drivers.add(lightSensorDriver);
+        drivers.add(simulatedLightSensor);
+    }
+
+    private void setupActuators() {
+        log.info("setting up actuators");
+
+        setupSimulatedRelayActuator();
+    }
+
+    private void setupSimulatedRelayActuator() {
+        log.info("setting up simulated relay actuator");
+
+        SimulatedRelayActuator simulatedRelayActuator = new SimulatedRelayActuator("1");
+
+        drivers.add(simulatedRelayActuator);
     }
 
     private void initializeDrivers() throws Exception {
