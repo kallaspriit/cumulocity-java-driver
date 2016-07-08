@@ -3,14 +3,8 @@ package com.stagnationlab.c8y.driver.actuators;
 import c8y.Hardware;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.pi4j.io.gpio.*;
-import com.pi4j.system.NetworkInfo;
-import com.pi4j.system.SystemInfo;
-import com.stagnationlab.c8y.driver.models.relay.RelayStateMeasurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.text.ParseException;
 
 public class RaspberryRelayActuator extends SimulatedRelayActuator {
 
@@ -43,8 +37,6 @@ public class RaspberryRelayActuator extends SimulatedRelayActuator {
 
             relayPin = gpio.provisionDigitalOutputPin(pinName, "Relay", PinState.LOW);
             relayPin.setShutdownOptions(true, PinState.HIGH);
-
-            // showSystemInfo();
 
             isRaspberryPi = true;
         } catch (Exception e) {
@@ -87,15 +79,10 @@ public class RaspberryRelayActuator extends SimulatedRelayActuator {
     protected void applyRelayState(boolean isRelayOn) {
         log.info("turning raspberry led " + (isRelayOn ? "on" : "off") + " on pin " + pinName.getName());
 
-        if (isRelayOn) {
-            relayPin.high();
-        } else {
-            relayPin.low();
-        }
-
-        //relayPin.setState(isRelayOn);
+        relayPin.setState(isRelayOn);
     }
 
+    /*
     private static void showSystemInfo() throws IOException, InterruptedException, ParseException {
         log.trace("----------------------------------------------------");
         log.trace("HARDWARE INFO");
@@ -179,4 +166,5 @@ public class RaspberryRelayActuator extends SimulatedRelayActuator {
         log.trace("HDMI Frequency    :  " + SystemInfo.getClockFrequencyHDMI());
         log.trace("DPI Frequency     :  " + SystemInfo.getClockFrequencyDPI());
     }
+    */
 }

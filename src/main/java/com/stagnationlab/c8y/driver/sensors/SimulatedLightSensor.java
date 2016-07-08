@@ -3,9 +3,7 @@ package com.stagnationlab.c8y.driver.sensors;
 import c8y.Hardware;
 import c8y.LightMeasurement;
 import c8y.LightSensor;
-import c8y.lx.driver.DeviceManagedObject;
 import c8y.lx.driver.MeasurementPollingDriver;
-import com.cumulocity.model.ID;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.stagnationlab.c8y.driver.DeviceManager;
 import org.slf4j.Logger;
@@ -18,10 +16,10 @@ public class SimulatedLightSensor extends MeasurementPollingDriver {
     private static Logger log = LoggerFactory.getLogger(SimulatedLightSensor.class);
 
     private static final String type = "Light";
-    private LightMeasurement lightMeasurement = new LightMeasurement();
+    private String id;
+
     private static final double MEASUREMENT_RANGE = 10.0;
     private double illuminance = MEASUREMENT_RANGE / 2.0;
-    private String id;
 
     public SimulatedLightSensor(String id) {
         super("c8y_" + type + "Sensor", "c8y." + type.toLowerCase(), 5000);
@@ -40,32 +38,31 @@ public class SimulatedLightSensor extends MeasurementPollingDriver {
     public void discoverChildren(ManagedObjectRepresentation parent) {
         log.info("creating child");
 
-        ManagedObjectRepresentation child = DeviceManager.createChild(
+        ManagedObjectRepresentation childDevice = DeviceManager.createChild(
                 id,
                 type,
-                new LightSensor(),
+                getPlatform(),
+                parent,
                 new Hardware(
                         "Simulated Light Sensor",
                         "098245687332343",
                         "1.0.0"
-                )
+                ),
+                getSupportedOperations(),
+                new LightSensor()
         );
 
-        setSource(child);
-
-        DeviceManagedObject deviceManagedObject = new DeviceManagedObject(getPlatform());
-        ID externalId = DeviceManager.buildExternalId(parent, child, id);
-
-        deviceManagedObject.createOrUpdate(child, externalId, parent.getId());
+        setSource(childDevice);
     }
 
     @Override
     public void run() {
         double illuminance = getIlluminance();
 
+        LightMeasurement lightMeasurement = new LightMeasurement();
         lightMeasurement.setIlluminance(new BigDecimal(illuminance));
 
-        super.sendMeasurement(lightMeasurement);
+        sendMeasurement(lightMeasurement);
 
         log.info("sending light illuminance measurement: " + illuminance);
     }

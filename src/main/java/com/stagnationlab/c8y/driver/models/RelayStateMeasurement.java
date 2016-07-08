@@ -1,4 +1,4 @@
-package com.stagnationlab.c8y.driver.models.relay;
+package com.stagnationlab.c8y.driver.models;
 
 import c8y.Relay;
 import com.cumulocity.model.measurement.MeasurementValue;
