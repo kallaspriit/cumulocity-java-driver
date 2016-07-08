@@ -23,8 +23,8 @@ repositories {
 
 dependencies {
     // cumulocity
-    compile group: 'com.nsn.cumulocity.clients-java', name: 'java-client', version: '7.28.0'
-    compile group: 'com.nsn.cumulocity.model', name: 'device-capability-model', version: '7.28.0'
+    compile group: 'com.nsn.cumulocity.clients-java', name: 'java-client', version: '5.19.0'
+    compile group: 'com.nsn.cumulocity.model', name: 'device-capability-model', version: '5.19.0'
 
     // pi4j raspberry pi gpio
     compile group: 'com.pi4j', name: 'pi4j-core', version: '1.0'

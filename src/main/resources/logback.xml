@@ -28,6 +28,7 @@
     <logger name="com.stagnationlab" level="TRACE"/>
     <logger name="c8y" level="TRACE"/>
     <logger name="org" level="TRACE"/>
+    <logger name="com" level="TRACE"/>
 
     <!-- external components log above WARN level -->
     <root level="TRACE">

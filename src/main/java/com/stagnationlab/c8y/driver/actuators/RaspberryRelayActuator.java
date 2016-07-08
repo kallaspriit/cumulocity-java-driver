@@ -5,6 +5,7 @@ import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.pi4j.io.gpio.*;
 import com.pi4j.system.NetworkInfo;
 import com.pi4j.system.SystemInfo;
+import com.stagnationlab.c8y.driver.models.relay.RelayStateMeasurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

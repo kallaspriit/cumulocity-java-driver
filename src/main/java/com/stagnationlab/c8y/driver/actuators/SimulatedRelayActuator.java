@@ -9,23 +9,32 @@ import c8y.lx.driver.OpsUtil;
 import com.cumulocity.model.ID;
 import com.cumulocity.model.operation.OperationStatus;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
+import com.cumulocity.rest.representation.measurement.MeasurementRepresentation;
 import com.cumulocity.rest.representation.operation.OperationRepresentation;
 import com.cumulocity.sdk.client.Platform;
+import com.cumulocity.sdk.client.measurement.MeasurementApi;
 import com.stagnationlab.c8y.driver.DeviceManager;
+import com.stagnationlab.c8y.driver.models.relay.RelayStateMeasurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 public class SimulatedRelayActuator implements Driver, OperationExecutor {
 
     private static Logger log = LoggerFactory.getLogger(SimulatedRelayActuator.class);
 
-    private ManagedObjectRepresentation relayManagedObject;
     private Relay relay = new Relay();
+    private RelayStateMeasurement relayStateMeasurement = new RelayStateMeasurement();
+    private MeasurementRepresentation measurementRepresentation = new MeasurementRepresentation();
+    private MeasurementApi measurementApi;
+    private ManagedObjectRepresentation relayManagedObject;
     private Platform platform;
     private String id;
 
     public SimulatedRelayActuator(String id) {
         this.id = id;
+        this.measurementRepresentation.setType("c8y_Relay");
     }
 
     @Override
@@ -38,6 +47,7 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
         log.info("initializing platform");
 
         this.platform = platform;
+        this.measurementApi = platform.getMeasurementApi();
     }
 
     @Override
@@ -52,6 +62,8 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
                 new Relay(),
                 getHardware()
         );
+
+        measurementRepresentation.setSource(relayManagedObject);
 
         for (OperationExecutor operation : getSupportedOperations()) {
             log.info("registering supported operation type '" + operation.supportedOperationType() + "'");
@@ -138,6 +150,16 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
         }
 
         applyRelayState(isRelayOn);
+        updateManagedObjectState(isRelayOn);
+        sendStateMeasurement(isRelayOn);
+    }
+
+    private void setRelayOn(boolean isRelayOn) {
+        setRelayOn(isRelayOn, false);
+    }
+
+    private void updateManagedObjectState(boolean isRelayOn) {
+        log.info("updating relay managed object state to " + (isRelayOn ? "on" : "off") + " state");
 
         relay.setRelayState(isRelayOn ? Relay.RelayState.CLOSED : Relay.RelayState.OPEN);
 
@@ -145,10 +167,25 @@ public class SimulatedRelayActuator implements Driver, OperationExecutor {
         updateRelayManagedObject.setId(relayManagedObject.getId());
         updateRelayManagedObject.set(relay);
 
-        platform.getInventoryApi().update(updateRelayManagedObject);
+        relayManagedObject = platform.getInventoryApi().update(updateRelayManagedObject);
     }
 
-    private void setRelayOn(boolean isRelayOn) {
-        setRelayOn(isRelayOn, false);
+    private void sendStateMeasurement(boolean isRelayOn) {
+        log.info("sending relay state change measurement: " + (isRelayOn ? "on" : "off") + " state");
+
+        relayStateMeasurement.setState(relay.getRelayState());
+
+        //TemperatureMeasurement temperatureMeasurement = new TemperatureMeasurement();
+        //temperatureMeasurement.setTemperature(new BigDecimal(25));
+        //measurementRepresentation.set(temperatureMeasurement);
+
+        measurementRepresentation.set(relayStateMeasurement);
+        measurementRepresentation.setTime(new Date());
+
+        //try {
+            measurementApi.create(measurementRepresentation);
+        //} catch (Exception e) {
+        //    log.warn("creating measurement {} failed (" + e.getMessage() + ")", measurementRepresentation);
+        //}
     }
 }
