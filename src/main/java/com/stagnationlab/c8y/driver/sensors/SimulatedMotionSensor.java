@@ -1,77 +1,95 @@
 package com.stagnationlab.c8y.driver.sensors;
 
 import c8y.Hardware;
-import c8y.lx.driver.DeviceManagedObject;
-import c8y.lx.driver.Driver;
-import c8y.lx.driver.OperationExecutor;
-import com.cumulocity.model.ID;
-import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
-import com.cumulocity.sdk.client.Platform;
-import com.cumulocity.sdk.client.event.EventApi;
-import com.stagnationlab.c8y.driver.DeviceManager;
-import com.stagnationlab.c8y.driver.models.MotionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimulatedMotionSensor implements Driver {
+import java.util.Date;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+
+import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+public class SimulatedMotionSensor extends AbstractMotionSensor implements Runnable {
 
     private static Logger log = LoggerFactory.getLogger(SimulatedMotionSensor.class);
 
-    private MotionEvent motionEvent = new MotionEvent();
-    private Platform platform;
-    private EventApi eventApi;
-    private static final String type = "Motion";
-    private String id;
+    @SuppressWarnings("FieldCanBeLocal")
+    private final long MEASUREMENT_INTERVAL = 30000;
+
+    private final ScheduledExecutorService executorService;
+    private volatile ScheduledFuture<?> scheduledFuture;
 
     public SimulatedMotionSensor(String id) {
-        this.id = id;
-    }
+        super(id);
 
-    @Override
-    public void initialize() throws Exception {
-        log.info("initializing");
-    }
-
-    @Override
-    public void initialize(Platform platform) throws Exception {
-        log.info("initializing platform");
-
-        this.platform = platform;
-        this.eventApi = platform.getEventApi();
-    }
-
-    @Override
-    public void discoverChildren(ManagedObjectRepresentation parent) {
-        log.info("creating child");
-
-        ManagedObjectRepresentation childDevice = DeviceManager.createChild(
-                id,
-                type,
-                platform,
-                parent,
-                new Hardware(
-                        "Simulated Motion Sensor",
-                        "927819335679844",
-                        "1.0.0"
-                ),
-                getSupportedOperations()
+        this.executorService = newSingleThreadScheduledExecutor(
+                new NamedThreadFactory("SimulatedMotionSensor")
         );
-
-        motionEvent.setSource(childDevice);
-    }
-
-    @Override
-    public OperationExecutor[] getSupportedOperations() {
-        return new OperationExecutor[0];
-    }
-
-    @Override
-    public void initializeInventory(ManagedObjectRepresentation parent) {
-
     }
 
     @Override
     public void start() {
+        scheduleMeasurements();
+    }
 
+    @Override
+    Hardware getHardware() {
+        return new Hardware(
+                "Simulated Motion Sensor",
+                "006226662342449",
+                "1.0.0"
+        );
+    }
+
+    @Override
+    public void run() {
+        log.info("simulating motion detected");
+
+        triggerMotionDetected();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        log.info("simulating motion ended");
+
+        triggerMotionEnded();
+    }
+
+    private static long computeInitialDelay(long now, long pollingInterval) {
+        long remainder = now % pollingInterval;
+        return pollingInterval - remainder;
+    }
+
+    private void scheduleMeasurements() {
+        log.info("scheduling measurements");
+
+        if (scheduledFuture != null) {
+            return; // already started
+        }
+
+        long now = new Date().getTime();
+        long initialDelay = computeInitialDelay(now, MEASUREMENT_INTERVAL);
+
+        scheduledFuture = executorService.scheduleAtFixedRate(this, initialDelay, MEASUREMENT_INTERVAL, MILLISECONDS);
+    }
+
+    private static class NamedThreadFactory implements ThreadFactory {
+
+        private final String threadName;
+
+        NamedThreadFactory(String threadName) {
+            this.threadName = threadName;
+        }
+
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r, threadName);
+        }
     }
 }

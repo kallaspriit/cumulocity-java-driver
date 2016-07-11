@@ -10,7 +10,9 @@ import com.cumulocity.sdk.client.Platform;
 import com.pi4j.io.gpio.RaspiPin;
 import com.stagnationlab.c8y.driver.actuators.RaspberryRelayActuator;
 import com.stagnationlab.c8y.driver.actuators.SimulatedRelayActuator;
+import com.stagnationlab.c8y.driver.sensors.RaspberryMotionSensor;
 import com.stagnationlab.c8y.driver.sensors.SimulatedLightSensor;
+import com.stagnationlab.c8y.driver.sensors.SimulatedMotionSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,43 +120,6 @@ public class GatewayDriver implements Driver, OperationExecutor {
         return operationExecutorsList.toArray(new OperationExecutor[operationExecutorsList.size()]);
     }
 
-    private void setupSensors() {
-        log.info("setting up sensors");
-
-        setupSimulatedLightSensor();
-    }
-
-    private void setupSimulatedLightSensor() {
-        log.info("setting up light sensor");
-
-        SimulatedLightSensor simulatedLightSensor = new SimulatedLightSensor("1");
-
-        drivers.add(simulatedLightSensor);
-    }
-
-    private void setupActuators() {
-        log.info("setting up actuators");
-
-        setupSimulatedRelayActuator();
-        setupRaspberryRelayActuator();
-    }
-
-    private void setupSimulatedRelayActuator() {
-        log.info("setting up simulated relay actuator");
-
-        SimulatedRelayActuator simulatedRelayActuator = new SimulatedRelayActuator("1");
-
-        drivers.add(simulatedRelayActuator);
-    }
-
-    private void setupRaspberryRelayActuator() {
-        log.info("setting up raspberry relay actuator");
-
-        RaspberryRelayActuator raspberryRelayActuator = new RaspberryRelayActuator("2", RaspiPin.GPIO_09);
-
-        drivers.add(raspberryRelayActuator);
-    }
-
     private void initializeDrivers() {
         log.info("initializing drivers");
 
@@ -189,5 +154,60 @@ public class GatewayDriver implements Driver, OperationExecutor {
                 iterator.remove();
             }
         }
+    }
+
+    private void setupSensors() {
+        log.info("setting up sensors");
+
+        setupSimulatedLightSensor();
+        setupSimulatedMotionSensor();
+        setupRaspberryMotionSensor();
+    }
+
+    private void setupSimulatedLightSensor() {
+        log.info("setting up simulated light sensor");
+
+        drivers.add(
+                new SimulatedLightSensor("1")
+        );
+    }
+
+    private void setupSimulatedMotionSensor() {
+        log.info("setting up simulated motion sensor");
+
+        drivers.add(
+                new SimulatedMotionSensor("1")
+        );
+    }
+
+    private void setupRaspberryMotionSensor() {
+        log.info("setting up raspberry motion sensor");
+
+        drivers.add(
+                new RaspberryMotionSensor("2", RaspiPin.GPIO_00)
+        );
+    }
+
+    private void setupActuators() {
+        log.info("setting up actuators");
+
+        setupSimulatedRelayActuator();
+        setupRaspberryRelayActuator();
+    }
+
+    private void setupSimulatedRelayActuator() {
+        log.info("setting up simulated relay actuator");
+
+        drivers.add(
+                new SimulatedRelayActuator("1")
+        );
+    }
+
+    private void setupRaspberryRelayActuator() {
+        log.info("setting up raspberry relay actuator");
+
+        drivers.add(
+                new RaspberryRelayActuator("2", RaspiPin.GPIO_23)
+        );
     }
 }

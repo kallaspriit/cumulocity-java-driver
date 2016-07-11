@@ -7,7 +7,6 @@ import c8y.lx.driver.OpsUtil;
 import com.cumulocity.model.ID;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.cumulocity.sdk.client.Platform;
-import com.stagnationlab.c8y.driver.actuators.SimulatedRelayActuator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +58,7 @@ public class DeviceManager {
         return createChild(id, type, platform, parent, hardware, supportedOperations, null);
     }
 
-    public static ID buildExternalId(ManagedObjectRepresentation parent, ManagedObjectRepresentation child, String id) {
+    private static ID buildExternalId(ManagedObjectRepresentation parent, ManagedObjectRepresentation child, String id) {
         return new ID(
                 parent.get(Hardware.class).getSerialNumber() +
                 "-" + child.get(Hardware.class).getSerialNumber() +
