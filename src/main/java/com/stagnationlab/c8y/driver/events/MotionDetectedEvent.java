@@ -7,7 +7,7 @@ import java.util.Date;
 public class MotionDetectedEvent extends EventRepresentation {
 
     public MotionDetectedEvent() {
-        setType("c8y_MotionEvent");
+        setType("MotionDetectedEvent");
         setText("Motion detected");
         setTime(new Date());
     }

@@ -7,7 +7,7 @@ import java.util.Date;
 public class MotionEndedEvent extends EventRepresentation {
 
     public MotionEndedEvent() {
-        setType("c8y_MotionEvent");
+        setType("MotionEndedEvent");
         setText("Motion ended");
         setTime(new Date());
     }
