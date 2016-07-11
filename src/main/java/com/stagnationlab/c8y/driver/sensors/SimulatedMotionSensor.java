@@ -14,7 +14,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class SimulatedMotionSensor extends AbstractMotionSensor implements Runnable {
 
-    private static Logger log = LoggerFactory.getLogger(SimulatedMotionSensor.class);
+    private static final Logger log = LoggerFactory.getLogger(SimulatedMotionSensor.class);
 
     @SuppressWarnings("FieldCanBeLocal")
     private final long MEASUREMENT_INTERVAL = 30000;

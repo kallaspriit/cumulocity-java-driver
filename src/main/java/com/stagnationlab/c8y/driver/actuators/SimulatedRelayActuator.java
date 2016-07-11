@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public class SimulatedRelayActuator extends AbstractRelayActuator {
 
-    private static Logger log = LoggerFactory.getLogger(SimulatedRelayActuator.class);
+    private static final Logger log = LoggerFactory.getLogger(SimulatedRelayActuator.class);
 
     public SimulatedRelayActuator(String id) {
         super(id);

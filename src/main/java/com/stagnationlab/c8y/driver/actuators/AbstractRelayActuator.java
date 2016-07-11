@@ -19,15 +19,15 @@ import java.util.Date;
 
 abstract class AbstractRelayActuator implements Driver, OperationExecutor {
 
-    private static Logger log = LoggerFactory.getLogger(AbstractRelayActuator.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractRelayActuator.class);
 
     private static final String TYPE = "Relay";
 
-    private Relay relay = new Relay();
+    private final Relay relay = new Relay();
     private Platform platform;
     private MeasurementApi measurementApi;
     private ManagedObjectRepresentation childDevice;
-    private String id;
+    private final String id;
 
     AbstractRelayActuator(String id) {
         this.id = id;

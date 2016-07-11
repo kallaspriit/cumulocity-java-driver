@@ -13,11 +13,11 @@ import java.math.BigDecimal;
 
 abstract class AbstractLightSensor extends MeasurementPollingDriver {
 
-    private static Logger log = LoggerFactory.getLogger(SimulatedLightSensor.class);
+    private static final Logger log = LoggerFactory.getLogger(SimulatedLightSensor.class);
 
     private static final String TYPE = "Light";
 
-    private String id;
+    private final String id;
     private static final double MEASUREMENT_RANGE = 10.0;
     double illuminance = MEASUREMENT_RANGE / 2.0;
 
@@ -43,11 +43,7 @@ abstract class AbstractLightSensor extends MeasurementPollingDriver {
                 TYPE,
                 getPlatform(),
                 parent,
-                new Hardware(
-                        "Simulated Light Sensor",
-                        "098245687332343",
-                        "1.0.0"
-                ),
+                getHardware(),
                 getSupportedOperations(),
                 new LightSensor()
         );
@@ -66,6 +62,8 @@ abstract class AbstractLightSensor extends MeasurementPollingDriver {
 
         log.info("sending light illuminance measurement: " + illuminance);
     }
+
+    abstract Hardware getHardware();
 
     abstract double getIlluminance();
 

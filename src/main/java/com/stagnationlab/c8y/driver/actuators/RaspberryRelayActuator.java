@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class RaspberryRelayActuator extends AbstractRelayActuator {
 
-    private static Logger log = LoggerFactory.getLogger(RaspberryRelayActuator.class);
+    private static final Logger log = LoggerFactory.getLogger(RaspberryRelayActuator.class);
 
     private final Pin pinName;
     private GpioPinDigitalOutput relayPin;
@@ -36,7 +36,7 @@ public class RaspberryRelayActuator extends AbstractRelayActuator {
             relayPin = gpio.provisionDigitalOutputPin(pinName, PinState.LOW);
             relayPin.setShutdownOptions(true, PinState.HIGH);
         } catch (Exception e) {
-            throw new Exception("raspberry pi not found");
+            throw new Exception("provisioning pin failed (" + e.getMessage() + ")");
         }
     }
 

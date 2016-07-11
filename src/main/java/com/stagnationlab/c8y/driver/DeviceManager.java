@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class DeviceManager {
 
-    private static Logger log = LoggerFactory.getLogger(DeviceManager.class);
+    private static final Logger log = LoggerFactory.getLogger(DeviceManager.class);
 
     public static ManagedObjectRepresentation createChild(
             String id,

@@ -7,13 +7,13 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RaspberryMotionSensor extends AbstractMotionSensor {
+public class RaspberryButtonSensor extends AbstractButtonSensor {
 
     private static final Logger log = LoggerFactory.getLogger(RaspberryMotionSensor.class);
 
     private final Pin pinName;
 
-    public RaspberryMotionSensor(String id, Pin pinName) {
+    public RaspberryButtonSensor(String id, Pin pinName) {
         super(id);
 
         this.pinName = pinName;
@@ -31,27 +31,27 @@ public class RaspberryMotionSensor extends AbstractMotionSensor {
 
         log.info("initializing on " + osName);
 
-        GpioPinDigitalInput motionPin;
+        GpioPinDigitalInput buttonPin;
 
         try {
             GpioController gpio = GpioFactory.getInstance();
 
-            motionPin = gpio.provisionDigitalInputPin(pinName, PinPullResistance.PULL_DOWN);
+            buttonPin = gpio.provisionDigitalInputPin(pinName, PinPullResistance.PULL_UP);
         } catch (Exception e) {
             throw new Exception("provisioning pin failed (" + e.getMessage() + ")");
         }
 
-        motionPin.addListener(new GpioPinListenerDigital() {
+        buttonPin.addListener(new GpioPinListenerDigital() {
             @Override
             public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-                if (event.getState() == PinState.HIGH) {
-                    log.info("motion detected");
+                if (event.getState() == PinState.LOW) {
+                    log.info("button pressed");
 
-                    triggerMotionDetected();
+                    triggerButtonPressed();
                 } else {
-                    log.info("motion reset");
+                    log.info("button released");
 
-                    triggerMotionEnded();
+                    triggerButtonReleased();
                 }
             }
         });
@@ -60,9 +60,10 @@ public class RaspberryMotionSensor extends AbstractMotionSensor {
     @Override
     Hardware getHardware() {
         return new Hardware(
-                "Raspberry Motion Sensor",
-                "123429524592063",
+                "Raspberry Button Sensor",
+                "223735095238234",
                 "1.0.0"
         );
     }
+
 }
