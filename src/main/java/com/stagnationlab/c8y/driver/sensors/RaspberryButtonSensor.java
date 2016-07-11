@@ -12,6 +12,7 @@ public class RaspberryButtonSensor extends AbstractButtonSensor {
     private static final Logger log = LoggerFactory.getLogger(RaspberryMotionSensor.class);
 
     private final Pin pinName;
+    private GpioPinDigitalInput buttonPin;
 
     public RaspberryButtonSensor(String id, Pin pinName) {
         super(id);
@@ -31,8 +32,6 @@ public class RaspberryButtonSensor extends AbstractButtonSensor {
 
         log.info("initializing on " + osName);
 
-        GpioPinDigitalInput buttonPin;
-
         try {
             GpioController gpio = GpioFactory.getInstance();
 
@@ -40,7 +39,28 @@ public class RaspberryButtonSensor extends AbstractButtonSensor {
         } catch (Exception e) {
             throw new Exception("provisioning pin failed (" + e.getMessage() + ")");
         }
+    }
 
+    @Override
+    Hardware getHardware() {
+        return new Hardware(
+                "Raspberry Button Sensor",
+                "223735095238234",
+                "1.0.0"
+        );
+    }
+
+    @Override
+    public void start() {
+        super.start();
+
+        log.info("starting");
+
+        sendInitialState();
+        setupStateChangeListener();
+    }
+
+    private void sendInitialState() {
         if (buttonPin.getState() == PinState.LOW) {
             log.info("sending initial button pressed");
 
@@ -50,6 +70,10 @@ public class RaspberryButtonSensor extends AbstractButtonSensor {
 
             triggerButtonReleased();
         }
+    }
+
+    private void setupStateChangeListener() {
+        log.info("setting up state change listener");
 
         buttonPin.addListener(new GpioPinListenerDigital() {
             @Override
@@ -65,15 +89,6 @@ public class RaspberryButtonSensor extends AbstractButtonSensor {
                 }
             }
         });
-    }
-
-    @Override
-    Hardware getHardware() {
-        return new Hardware(
-                "Raspberry Button Sensor",
-                "223735095238234",
-                "1.0.0"
-        );
     }
 
 }
