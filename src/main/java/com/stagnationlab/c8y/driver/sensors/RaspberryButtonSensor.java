@@ -41,6 +41,16 @@ public class RaspberryButtonSensor extends AbstractButtonSensor {
             throw new Exception("provisioning pin failed (" + e.getMessage() + ")");
         }
 
+        if (buttonPin.getState() == PinState.LOW) {
+            log.info("sending initial button pressed");
+
+            triggerButtonPressed();
+        } else {
+            log.info("sending initial button released");
+
+            triggerButtonReleased();
+        }
+
         buttonPin.addListener(new GpioPinListenerDigital() {
             @Override
             public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
