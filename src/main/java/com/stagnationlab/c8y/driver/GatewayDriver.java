@@ -8,12 +8,10 @@ import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.cumulocity.rest.representation.operation.OperationRepresentation;
 import com.cumulocity.sdk.client.Platform;
 import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.i2c.I2CBus;
 import com.stagnationlab.c8y.driver.actuators.RaspberryRelayActuator;
 import com.stagnationlab.c8y.driver.actuators.SimulatedRelayActuator;
-import com.stagnationlab.c8y.driver.sensors.RaspberryButtonSensor;
-import com.stagnationlab.c8y.driver.sensors.RaspberryMotionSensor;
-import com.stagnationlab.c8y.driver.sensors.SimulatedLightSensor;
-import com.stagnationlab.c8y.driver.sensors.SimulatedMotionSensor;
+import com.stagnationlab.c8y.driver.sensors.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,6 +160,7 @@ public class GatewayDriver implements Driver, OperationExecutor {
 
         setupSimulatedLightSensor();
         setupSimulatedMotionSensor();
+        setupRaspberryLightSensor();
         setupRaspberryMotionSensor();
         setupRaspberryButtonSensor();
     }
@@ -179,6 +178,14 @@ public class GatewayDriver implements Driver, OperationExecutor {
 
         drivers.add(
                 new SimulatedMotionSensor("1")
+        );
+    }
+
+    private void setupRaspberryLightSensor() {
+        log.info("setting up raspberry light sensor");
+
+        drivers.add(
+                new RaspberryLightSensor("2", I2CBus.BUS_1, 0x55)
         );
     }
 

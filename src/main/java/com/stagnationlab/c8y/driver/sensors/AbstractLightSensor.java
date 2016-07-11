@@ -18,8 +18,7 @@ abstract class AbstractLightSensor extends MeasurementPollingDriver {
     private static final String TYPE = "Light";
 
     private final String id;
-    private static final double MEASUREMENT_RANGE = 10.0;
-    double illuminance = MEASUREMENT_RANGE / 2.0;
+    double illuminance = 100.0 / 2.0;
 
     AbstractLightSensor(String id) {
         super("c8y_" + TYPE + "Sensor", "c8y." + TYPE.toLowerCase(), 5000);
