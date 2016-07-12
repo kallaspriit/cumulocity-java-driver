@@ -33,11 +33,21 @@ public class RaspberryLightSensor extends AbstractLightSensor {
     public void initialize() throws Exception {
         super.initialize();
 
+        String osName = System.getProperty("os.name");
+
+        if (!osName.toLowerCase().contains("linux")) {
+            log.info("not linux platform (" + osName + "), skipping initialization");
+
+            throw new Exception("Skipping initialization on a non-linux platform");
+        }
+
+        log.info("initializing on " + osName);
+
         I2CBus bus = I2CFactory.getInstance(i2cBus);
         device = bus.getDevice(deviceAddress);
 
         // configure device
-        device.write(0x02, (byte)0x20);
+        device.write(0x02, (byte) 0x20);
     }
 
     @Override

@@ -21,6 +21,8 @@ public class RaspberryMotionSensor extends AbstractMotionSensor {
 
     @Override
     public void initialize() throws Exception {
+        super.initialize();
+
         String osName = System.getProperty("os.name");
 
         if (!osName.toLowerCase().contains("linux")) {

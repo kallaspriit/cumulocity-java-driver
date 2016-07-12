@@ -2,7 +2,8 @@ package com.stagnationlab.c8y.driver.sensors;
 
 import c8y.Hardware;
 import c8y.LightMeasurement;
-import c8y.LightSensor;
+import c8y.TemperatureMeasurement;
+import c8y.TemperatureSensor;
 import c8y.lx.driver.MeasurementPollingDriver;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
 import com.stagnationlab.c8y.driver.DeviceManager;
@@ -11,15 +12,15 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 
-abstract class AbstractLightSensor extends MeasurementPollingDriver {
+abstract class AbstractTemperatureSensor extends MeasurementPollingDriver {
 
-    private static final Logger log = LoggerFactory.getLogger(SimulatedLightSensor.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractTemperatureSensor.class);
 
-    private static final String TYPE = "Light";
+    private static final String TYPE = "Temperature";
 
     private final String id;
 
-    AbstractLightSensor(String id) {
+    AbstractTemperatureSensor(String id) {
         super("c8y_" + TYPE + "Sensor", "c8y." + TYPE.toLowerCase(), 5000);
 
         this.id = id;
@@ -41,7 +42,7 @@ abstract class AbstractLightSensor extends MeasurementPollingDriver {
                 parent,
                 getHardware(),
                 getSupportedOperations(),
-                new LightSensor()
+                new TemperatureSensor()
         );
 
         setSource(childDevice);
@@ -49,18 +50,18 @@ abstract class AbstractLightSensor extends MeasurementPollingDriver {
 
     @Override
     public void run() {
-        double illuminance = getIlluminance();
+        double temperature = getTemperature();
 
-        LightMeasurement lightMeasurement = new LightMeasurement();
-        lightMeasurement.setIlluminance(new BigDecimal(illuminance));
+        TemperatureMeasurement temperatureMeasurement = new TemperatureMeasurement();
+        temperatureMeasurement.setTemperature(new BigDecimal(temperature));
 
-        sendMeasurement(lightMeasurement);
+        sendMeasurement(temperatureMeasurement);
 
-        log.info("sending light illuminance measurement: " + illuminance);
+        log.info("sending temperature measurement: " + temperature);
     }
 
     abstract Hardware getHardware();
 
-    abstract double getIlluminance();
+    abstract double getTemperature();
 
 }
