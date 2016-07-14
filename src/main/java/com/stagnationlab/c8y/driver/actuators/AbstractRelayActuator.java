@@ -87,11 +87,7 @@ abstract class AbstractRelayActuator implements Driver, OperationExecutor {
 
     @Override
     public void execute(OperationRepresentation operation, boolean cleanup) throws Exception {
-        log.info("checking execution " + (childDevice == null ? "null" : "not null"));
-
         if (!childDevice.getId().equals(operation.getDeviceId())) {
-            log.info((cleanup ? "cleanup" : "normal") + " execution for device '" + operation.getDeviceId() + "' requested but does not match this device (" + childDevice.getId() + "), ignoring it");
-
             return;
         }
 
@@ -105,9 +101,14 @@ abstract class AbstractRelayActuator implements Driver, OperationExecutor {
             operation.setStatus(OperationStatus.SUCCESSFUL.toString());
         }
 
-        boolean isRelayOn = relay.getRelayState().equals(Relay.RelayState.CLOSED);
+        Relay relay = operation.get(Relay.class);
+        Relay.RelayState relayState = relay.getRelayState();
 
-        setRelayOn(!isRelayOn);
+        boolean shouldRelayBeOn = relayState == Relay.RelayState.CLOSED;
+
+        log.info("requested relay state: " + relay.getRelayState().toString());
+
+        setRelayOn(shouldRelayBeOn);
     }
 
     abstract Hardware getHardware();
@@ -129,6 +130,8 @@ abstract class AbstractRelayActuator implements Driver, OperationExecutor {
     }
 
     private void setRelayOn(boolean isRelayOn) {
+        log.info("turning relay " + (isRelayOn ? "on" : "off"));
+
         setRelayOn(isRelayOn, false);
     }
 

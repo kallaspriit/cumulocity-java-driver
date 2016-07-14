@@ -227,7 +227,9 @@ public class GatewayDriver implements Driver, OperationExecutor {
         log.info("setting up actuators");
 
         setupSimulatedRelayActuator();
-        setupRaspberryRelayActuator();
+        setupRaspberryRedLedActuator();
+        setupRaspberryYellowLedActuator();
+        setupRaspberryGreenLedActuator();
     }
 
     private void setupSimulatedRelayActuator() {
@@ -238,11 +240,27 @@ public class GatewayDriver implements Driver, OperationExecutor {
         );
     }
 
-    private void setupRaspberryRelayActuator() {
-        log.info("setting up raspberry relay actuator");
+    private void setupRaspberryRedLedActuator() {
+        log.info("setting up raspberry red led relay actuator");
+
+        drivers.add(
+                new RaspberryRelayActuator("3", RaspiPin.GPIO_22)
+        );
+    }
+
+    private void setupRaspberryYellowLedActuator() {
+        log.info("setting up raspberry yellow led relay actuator");
 
         drivers.add(
                 new RaspberryRelayActuator("2", RaspiPin.GPIO_23)
+        );
+    }
+
+    private void setupRaspberryGreenLedActuator() {
+        log.info("setting up raspberry green led relay actuator");
+
+        drivers.add(
+                new RaspberryRelayActuator("4", RaspiPin.GPIO_29)
         );
     }
 }
