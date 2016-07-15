@@ -9,6 +9,7 @@ import com.cumulocity.rest.representation.operation.OperationRepresentation;
 import com.cumulocity.sdk.client.Platform;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.i2c.I2CBus;
+import com.stagnationlab.c8y.driver.actuators.RaspberryDigitalAnalogConverterActuator;
 import com.stagnationlab.c8y.driver.actuators.RaspberryRelayActuator;
 import com.stagnationlab.c8y.driver.actuators.SimulatedRelayActuator;
 import com.stagnationlab.c8y.driver.sensors.*;
@@ -20,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
+@SuppressWarnings("unused")
 public class GatewayDriver implements Driver, OperationExecutor {
     private static final Logger log = LoggerFactory.getLogger(GatewayDriver.class);
 
@@ -158,8 +160,8 @@ public class GatewayDriver implements Driver, OperationExecutor {
     private void setupSensors() {
         log.info("setting up sensors");
 
-        setupSimulatedLightSensor();
-        setupSimulatedMotionSensor();
+        //setupSimulatedLightSensor();
+        //setupSimulatedMotionSensor();
         setupRaspberryLightSensor();
         setupRaspberryMotionSensor();
         setupRaspberryButtonSensor();
@@ -226,10 +228,10 @@ public class GatewayDriver implements Driver, OperationExecutor {
     private void setupActuators() {
         log.info("setting up actuators");
 
-        setupSimulatedRelayActuator();
-        setupRaspberryRedLedActuator();
-        setupRaspberryYellowLedActuator();
-        setupRaspberryGreenLedActuator();
+        //setupSimulatedRelayActuator();
+        setupRaspberryRedLedRelayActuator();
+        setupRaspberryYellowLedRelayActuator();
+        setupRaspberryGreenLedDigitalAnalogConverterActuator();
     }
 
     private void setupSimulatedRelayActuator() {
@@ -240,7 +242,7 @@ public class GatewayDriver implements Driver, OperationExecutor {
         );
     }
 
-    private void setupRaspberryRedLedActuator() {
+    private void setupRaspberryRedLedRelayActuator() {
         log.info("setting up raspberry red led relay actuator");
 
         drivers.add(
@@ -248,19 +250,19 @@ public class GatewayDriver implements Driver, OperationExecutor {
         );
     }
 
-    private void setupRaspberryYellowLedActuator() {
+    private void setupRaspberryYellowLedRelayActuator() {
         log.info("setting up raspberry yellow led relay actuator");
 
         drivers.add(
-                new RaspberryRelayActuator("2", RaspiPin.GPIO_23)
+                new RaspberryRelayActuator("2", RaspiPin.GPIO_29)
         );
     }
 
-    private void setupRaspberryGreenLedActuator() {
-        log.info("setting up raspberry green led relay actuator");
+    private void setupRaspberryGreenLedDigitalAnalogConverterActuator() {
+        log.info("setting up raspberry green led digital to analog converter actuator *" + RaspiPin.GPIO_23.getAddress() + ")");
 
         drivers.add(
-                new RaspberryRelayActuator("4", RaspiPin.GPIO_29)
+                new RaspberryDigitalAnalogConverterActuator("1", 23)
         );
     }
 }

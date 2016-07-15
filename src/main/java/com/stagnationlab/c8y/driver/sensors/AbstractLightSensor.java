@@ -56,7 +56,7 @@ abstract class AbstractLightSensor extends MeasurementPollingDriver {
 
         sendMeasurement(lightMeasurement);
 
-        log.info("sending light illuminance measurement: " + illuminance);
+        //log.info("sending light illuminance measurement: " + illuminance);
     }
 
     abstract Hardware getHardware();

@@ -57,7 +57,7 @@ abstract class AbstractTemperatureSensor extends MeasurementPollingDriver {
 
         sendMeasurement(temperatureMeasurement);
 
-        log.info("sending temperature measurement: " + temperature);
+        //log.info("sending temperature measurement: " + temperature);
     }
 
     abstract Hardware getHardware();

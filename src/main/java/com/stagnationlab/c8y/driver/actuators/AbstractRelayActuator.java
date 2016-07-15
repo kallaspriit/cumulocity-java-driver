@@ -106,8 +106,6 @@ abstract class AbstractRelayActuator implements Driver, OperationExecutor {
 
         boolean shouldRelayBeOn = relayState == Relay.RelayState.CLOSED;
 
-        log.info("requested relay state: " + relay.getRelayState().toString());
-
         setRelayOn(shouldRelayBeOn);
     }
 
@@ -130,7 +128,7 @@ abstract class AbstractRelayActuator implements Driver, OperationExecutor {
     }
 
     private void setRelayOn(boolean isRelayOn) {
-        log.info("turning relay " + (isRelayOn ? "on" : "off"));
+        log.info("turning relay '" + id + "' " + (isRelayOn ? "on" : "off"));
 
         setRelayOn(isRelayOn, false);
     }
