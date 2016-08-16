@@ -109,7 +109,7 @@ abstract class AbstractDigitalAnalogConverterActuator implements Driver, Operati
     }
 
     private void updateManagedObjectState(int value) {
-        log.info("updating dac managed object value to " + value);
+        // log.info("updating dac managed object value to " + value);
 
         digitalAnalogConverter.setValue(value);
 

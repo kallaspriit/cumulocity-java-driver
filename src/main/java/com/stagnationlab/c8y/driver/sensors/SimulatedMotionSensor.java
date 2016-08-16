@@ -46,8 +46,6 @@ public class SimulatedMotionSensor extends AbstractMotionSensor implements Runna
 
     @Override
     public void run() {
-        log.info("simulating motion detected");
-
         triggerMotionDetected();
 
         try {
@@ -55,8 +53,6 @@ public class SimulatedMotionSensor extends AbstractMotionSensor implements Runna
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        log.info("simulating motion ended");
 
         triggerMotionEnded();
     }

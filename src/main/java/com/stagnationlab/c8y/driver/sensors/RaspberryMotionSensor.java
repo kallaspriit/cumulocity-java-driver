@@ -47,12 +47,8 @@ public class RaspberryMotionSensor extends AbstractMotionSensor {
             @Override
             public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
                 if (event.getState() == PinState.HIGH) {
-                    log.info("motion detected");
-
                     triggerMotionDetected();
                 } else {
-                    log.info("motion reset");
-
                     triggerMotionEnded();
                 }
             }
