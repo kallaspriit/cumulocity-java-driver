@@ -74,7 +74,7 @@ public class RaspberryLightSensor extends AbstractLightSensor {
         // convert the data to 12-bits
         int value = ((data[0] & 0x0F) * 256 + (data[1] & 0xFF));
 
-        return Util.map(value, RANGE_MIN, RANGE_MAX, 0.0, 100.0);
+        return Math.max(Math.min(Util.map(value, RANGE_MIN, RANGE_MAX, 0.0, 100.0), 100.0), 0.0);
     }
 
 }

@@ -162,6 +162,7 @@ public class GatewayDriver implements Driver, OperationExecutor {
 
         //setupSimulatedLightSensor();
         //setupSimulatedMotionSensor();
+        setupSimulatedPositionSensor();
         setupRaspberryLightSensor();
         setupRaspberryMotionSensor();
         setupRaspberryButtonSensor();
@@ -182,6 +183,14 @@ public class GatewayDriver implements Driver, OperationExecutor {
 
         drivers.add(
                 new SimulatedMotionSensor("1")
+        );
+    }
+
+    private void setupSimulatedPositionSensor() {
+        log.info("setting up simulated position sensor");
+
+        drivers.add(
+                new SimulatedPositionSensor("1")
         );
     }
 

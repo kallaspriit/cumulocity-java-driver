@@ -1,6 +1,7 @@
 package com.stagnationlab.c8y.driver.sensors;
 
 import c8y.Hardware;
+import c8y.MotionSensor;
 import c8y.lx.driver.Driver;
 import c8y.lx.driver.OperationExecutor;
 import com.cumulocity.rest.representation.inventory.ManagedObjectRepresentation;
@@ -63,7 +64,8 @@ abstract public class AbstractMotionSensor implements Driver {
                 platform,
                 parent,
                 getHardware(),
-                getSupportedOperations()
+                getSupportedOperations(),
+                new MotionSensor()
         );
     }
 
@@ -106,7 +108,7 @@ abstract public class AbstractMotionSensor implements Driver {
         MeasurementRepresentation measurementRepresentation = new MeasurementRepresentation();
 
         measurementRepresentation.setSource(childDevice);
-        measurementRepresentation.setType("MotionDetected");
+        measurementRepresentation.setType("c8y_MotionSensor");
 
         // send inverse measurement first to get a square graph
         MotionStateMeasurement measurement = new MotionStateMeasurement();
