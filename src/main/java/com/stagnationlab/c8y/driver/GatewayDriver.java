@@ -168,6 +168,7 @@ public class GatewayDriver implements Driver, OperationExecutor {
         setupRaspberryButtonSensor();
         setupRaspberryTemperatureSensor();
         setupRaspberryMonitoringSensor();
+        setupAccuWeatherSensor();
     }
 
     private void setupSimulatedLightSensor() {
@@ -231,6 +232,14 @@ public class GatewayDriver implements Driver, OperationExecutor {
 
         drivers.add(
                 new RaspberryMonitoringSensor("1")
+        );
+    }
+
+    private void setupAccuWeatherSensor() {
+        log.info("setting up AccuWeather sensor");
+
+        drivers.add(
+                new AccuWeatherSensor("1")
         );
     }
 

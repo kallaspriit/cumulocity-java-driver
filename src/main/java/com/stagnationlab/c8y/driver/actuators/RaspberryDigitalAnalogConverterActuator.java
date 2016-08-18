@@ -35,7 +35,7 @@ public class RaspberryDigitalAnalogConverterActuator extends AbstractDigitalAnal
     @Override
     protected Hardware getHardware() {
         return new Hardware(
-                "Raspberry Relay Actuator",
+                "Raspberry Digital to Analog Converter",
                 "876123688932234",
                 "1.0.0"
         );

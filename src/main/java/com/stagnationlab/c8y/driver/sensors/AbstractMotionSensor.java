@@ -108,7 +108,7 @@ abstract public class AbstractMotionSensor implements Driver {
         MeasurementRepresentation measurementRepresentation = new MeasurementRepresentation();
 
         measurementRepresentation.setSource(childDevice);
-        measurementRepresentation.setType("c8y_MotionSensor");
+        measurementRepresentation.setType("c8y");
 
         // send inverse measurement first to get a square graph
         MotionStateMeasurement measurement = new MotionStateMeasurement();

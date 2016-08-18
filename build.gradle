@@ -29,6 +29,9 @@ dependencies {
     // pi4j raspberry pi gpio
     compile group: 'com.pi4j', name: 'pi4j-core', version: '1.0'
 
+    // jackson JSON
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+
     // logging
     //compile group: 'org.slf4j', name: 'slf4j-simple', version: 'latest.release'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: 'latest.release'

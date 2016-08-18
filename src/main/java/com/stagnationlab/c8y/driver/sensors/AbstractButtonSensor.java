@@ -19,6 +19,8 @@ import java.util.Date;
 
 public abstract class AbstractButtonSensor implements Driver {
 
+    class ButtonSensor {}
+
     public enum State {
         BUTTON_RELEASED,
         BUTTON_PRESSED
@@ -63,7 +65,8 @@ public abstract class AbstractButtonSensor implements Driver {
                 platform,
                 parent,
                 getHardware(),
-                getSupportedOperations()
+                getSupportedOperations(),
+                new ButtonSensor()
         );
     }
 

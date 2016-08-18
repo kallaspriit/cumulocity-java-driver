@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 abstract class AbstractMonitoringSensor extends MeasurementPollingDriver {
 
+    class MonitoringSensor {}
+
     static class MonitoringStatus {
         double totalMemory;
         double usedMemory;
@@ -63,7 +65,8 @@ abstract class AbstractMonitoringSensor extends MeasurementPollingDriver {
                 getPlatform(),
                 parent,
                 getHardware(),
-                getSupportedOperations()
+                getSupportedOperations(),
+                new MonitoringSensor()
         );
 
         setSource(childDevice);
