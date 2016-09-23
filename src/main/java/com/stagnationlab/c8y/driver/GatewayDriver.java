@@ -130,9 +130,11 @@ public class GatewayDriver implements Driver, OperationExecutor {
             Driver driver = iterator.next();
 
             try {
+                log.info("initializing driver " + driver.getClass().getName());
+
                 driver.initialize();
-            } catch (Exception e) {
-                log.warn("initializing driver failed (" + e.getMessage() + "), skipping the driver " + driver.getClass().getName());
+            } catch (Throwable e) {
+                log.warn("initializing driver failed with " + e.getClass().getName() + " (" + e.getMessage() + "), skipping the driver " + driver.getClass().getName());
 
                 iterator.remove();
             }
@@ -149,8 +151,8 @@ public class GatewayDriver implements Driver, OperationExecutor {
 
             try {
                 driver.initialize(platform);
-            } catch (Exception e) {
-                log.warn("initializing driver platform failed (" + e.getMessage() + "), skipping the driver " + driver.getClass().getName());
+            } catch (Throwable e) {
+                log.warn("initializing driver platform failed with " + e.getClass().getName() + " (" + e.getMessage() + "), skipping the driver " + driver.getClass().getName());
 
                 iterator.remove();
             }
@@ -162,7 +164,8 @@ public class GatewayDriver implements Driver, OperationExecutor {
 
         //setupSimulatedLightSensor();
         //setupSimulatedMotionSensor();
-        setupSimulatedPositionSensor();
+        //setupSimulatedPositionSensor();
+        setupGpsPositionSensor();
         setupRaspberryLightSensor();
         setupRaspberryMotionSensor();
         setupRaspberryButtonSensor();
@@ -193,6 +196,22 @@ public class GatewayDriver implements Driver, OperationExecutor {
         drivers.add(
                 new SimulatedPositionSensor("1")
         );
+    }
+
+    private void setupGpsPositionSensor() {
+        log.info("setting up gps position sensor");
+
+        // linux
+        drivers.add(
+                new GpsPositionSensor("1", "/dev/ttyUSB0")
+        );
+
+        /*
+        // windows
+        drivers.add(
+                new GpsPositionSensor("2", "COM3")
+        );
+        */
     }
 
     private void setupRaspberryLightSensor() {
@@ -277,7 +296,7 @@ public class GatewayDriver implements Driver, OperationExecutor {
     }
 
     private void setupRaspberryGreenLedDigitalAnalogConverterActuator() {
-        log.info("setting up raspberry green led digital to analog converter actuator *" + RaspiPin.GPIO_23.getAddress() + ")");
+        log.info("setting up raspberry green led digital to analog converter actuator (" + RaspiPin.GPIO_23.getAddress() + ")");
 
         drivers.add(
                 new RaspberryDigitalAnalogConverterActuator("1", 23)

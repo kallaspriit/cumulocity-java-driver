@@ -30,6 +30,6 @@ public class SimulatedPositionSensor extends AbstractPositionSensor {
         longitude += Math.random() * positionSpeed - (positionSpeed * 0.5);
         altitude += Math.random() * altitudeSpeed - (altitudeSpeed * 0.5);
 
-        return new PositionState(latitude, longitude, altitude);
+        return new PositionState(latitude, longitude, altitude, true);
     }
 }

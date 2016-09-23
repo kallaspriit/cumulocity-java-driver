@@ -32,6 +32,9 @@ dependencies {
     // jackson JSON
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
 
+    // serial communication
+    compile 'com.fazecast:jSerialComm:1.3.11'
+
     // logging
     //compile group: 'org.slf4j', name: 'slf4j-simple', version: 'latest.release'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: 'latest.release'

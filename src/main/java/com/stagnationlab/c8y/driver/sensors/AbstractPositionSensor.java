@@ -18,11 +18,17 @@ abstract class AbstractPositionSensor extends MeasurementPollingDriver {
         double latitude;
         double longitude;
         double altitude;
+        boolean hasFix;
 
-        public PositionState(double latitude, double longitude, double altitude) {
+        public PositionState(double latitude, double longitude, double altitude, boolean hasFix) {
             this.latitude = latitude;
             this.longitude = longitude;
             this.altitude = altitude;
+            this.hasFix = hasFix;
+        }
+
+        public PositionState() {
+            this(0, 0, 0, false);
         }
     }
 
